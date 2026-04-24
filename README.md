@@ -7,7 +7,7 @@ This tool utilizes eBPF to precisely capture the Zygote fork specialization of a
 * **100% Ptrace-Free**: Never uses `ptrace` or the `TracerPid`. Undetectable by standard debugger checks.
 * **Cave Scrubber**: Actively destroys the residual memory footprint of the injection payload after execution to defeat in-memory scanners.
 * **Dynamic ELF Parsing**: Natively parses `libelf` on-device to defeat ASLR and Android OS versioning of the `dlopen` symbol. No hardcoded offsets.
-* **App Context Support**: Instantly intercepts target package strings (e.g. `com.gemalto.eziomobilesampleapp`). No manual UID lookup required.
+* **App Context Support**: Instantly intercepts target package strings (e.g. `com.fatalsec.fatalpay`). No manual UID lookup required.
 
 ## 🛠 Compilation (Two Options)
 
@@ -58,3 +58,17 @@ adb shell "su -c '/data/local/tmp/injector com.example.targetapp /data/local/tmp
 ```
 
 3. Launch the target app on your phone. The eBPF kernel script will instantly catch the launch, inject the payload, scrub the memory, and the injector will securely terminate itself.
+```bash
+./injector com.fatalsec.fatalpay /data/local/tmp/libstealth_agent.so                             <
+[*] eBPF /proc/mem Stealth Injector Started
+[*] Target App: com.unissey.demoapp (UID 10343)
+[*] Payload: /data/local/tmp/libstealth_agent.so
+[+] Attached. Waiting for target launch...
+[+] Target Captured: PID 20214
+[+] Dynamically resolved dlopen in /apex/com.android.runtime/lib64/bionic/libdl.so at offset 0x4020
+[+] Hijacked IP 0x75b55b454c to Cave 0x75b55c85c0. Waking app...
+[+] Injection complete signal from PID 20214.
+[+] Original instruction restored at 0x75b55b454c.
+[*] Resuming target for seamless continuation. Cave scrubbed!
+[*] Injection complete. Shutting down gracefully.
+```
