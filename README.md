@@ -61,7 +61,7 @@ adb shell "su -c '/data/local/tmp/injector com.example.targetapp /data/local/tmp
 ```bash
 ./injector com.fatalsec.fatalpay /data/local/tmp/libstealth_agent.so                             <
 [*] eBPF /proc/mem Stealth Injector Started
-[*] Target App: com.unissey.demoapp (UID 10343)
+[*] Target App: com.fatalsec.fatalpay (UID 10343)
 [*] Payload: /data/local/tmp/libstealth_agent.so
 [+] Attached. Waiting for target launch...
 [+] Target Captured: PID 20214
