@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
@@ -21,6 +21,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y \
+            build-essential \
             clang \
             llvm \
             gcc-aarch64-linux-gnu \
@@ -30,11 +31,20 @@ jobs:
             libbpf-dev \
             bpftool
 
-      - name: Build
+      - name: Show versions
         run: |
-          make
+          uname -a
+          clang --version
+          bpftool version
 
-      # Ganti "my_binary" dengan nama hasil build kamu
+      - name: Build
+        run: make
+
+      - name: List build output
+        run: |
+          find . -maxdepth 2 -type f
+
+      # Ganti path ini sesuai hasil build
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
