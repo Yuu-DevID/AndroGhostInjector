@@ -27,7 +27,8 @@ jobs:
             libc6-dev-arm64-cross \
             libelf-dev \
             zlib1g-dev \
-            libbpf-dev
+            libbpf-dev \
+            bpftool
 
       - name: Build
         run: |
