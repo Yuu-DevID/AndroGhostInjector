@@ -14,33 +14,42 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y \
-            build-essential \
-            clang \
-            llvm \
-            gcc-aarch64-linux-gnu \
-            libc6-dev-arm64-cross \
-            libelf-dev \
-            zlib1g-dev \
-            libbpf-dev \
-            curl
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Download bpftool
         run: |
           curl -L https://github.com/libbpf/bpftool/releases/download/v7.4.0/bpftool-v7.4.0-amd64.tar.gz \
             | tar -xz
           chmod +x bpftool
-          sudo mv bpftool /usr/local/bin/
+          mv bpftool bpftool_bin
+          ls -lah bpftool_bin
 
-      - name: Verify bpftool
+      - name: Build Docker image
         run: |
-          which bpftool
-          bpftool version
+          docker build -t injector-builder .
 
-      - name: Build
-        run: make
+      - name: Build project
+        run: |
+          docker run --rm \
+            -v "$PWD:/work" \
+            -w /work \
+            injector-builder \
+            make
+
+      - name: Show output
+        run: |
+          ls -lah
+          file injector || true
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: injector
+          path: injector
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: injector
