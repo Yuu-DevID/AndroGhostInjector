@@ -1,0 +1,49 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            clang \
+            llvm \
+            gcc-aarch64-linux-gnu \
+            libc6-dev-arm64-cross \
+            libelf-dev \
+            zlib1g-dev \
+            libbpf-dev
+
+      - name: Build
+        run: |
+          make
+
+      # Ganti "my_binary" dengan nama hasil build kamu
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: |
+            my_binary
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            my_binary
